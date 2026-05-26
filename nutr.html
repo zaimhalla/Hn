@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriCare — Fiche Diététique</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7a9e7e;
+    --sage-light: #a8c5ac;
+    --sage-dark: #4a6b4e;
+    --cream: #faf8f3;
+    --warm: #f0ebe0;
+    --gold: #c9a84c;
+    --text: #2c2c2c;
+    --text-light: #6b6b6b;
+    --white: #ffffff;
+    --shadow: 0 8px 40px rgba(74,107,78,0.12);
+    --radius: 16px;
+    --border: #ddd8cc;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--sage-dark);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+  header .logo-icon {
+    width: 42px; height: 42px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1.6rem;
+    letter-spacing: 0.5px;
+  }
+  header span {
+    color: var(--sage-light);
+    font-size: 0.85rem;
+    font-weight: 300;
+    margin-left: 4px;
+  }
+
+  /* ── Main container ── */
+  .app {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 40px;
+  }
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    position: relative; flex: 1;
+  }
+  .step-dot:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px; left: 50%;
+    width: 100%; height: 2px;
+    background: var(--border);
+    z-index: 0;
+    transition: background 0.4s;
+  }
+  .step-dot.done:not(:last-child)::after { background: var(--sage); }
+  .dot-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--warm); border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--text-light);
+    z-index: 1; transition: all 0.3s;
+  }
+  .step-dot.active .dot-circle {
+    background: var(--sage); border-color: var(--sage-dark);
+    color: white; transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(122,158,126,0.2);
+  }
+  .step-dot.done .dot-circle {
+    background: var(--sage-dark); border-color: var(--sage-dark);
+    color: white;
+  }
+  .dot-label {
+    font-size: 11px; color: var(--text-light); font-weight: 500;
+    text-align: center; white-space: nowrap;
+  }
+  .step-dot.active .dot-label { color: var(--sage-dark); font-weight: 600; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: slideUp 0.4s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--sage-dark), var(--sage));
+    padding: 28px 36px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .card-header .icon { font-size: 28px; }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: white; font-size: 1.5rem;
+  }
+  .card-header p { color: rgba(255,255,255,0.75); font-size: 0.85rem; margin-top: 2px; }
+
+  .card-body { padding: 36px; }
+
+  /* ── Form grid ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 0.82rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.6px; }
+  input[type=text], input[type=number], select, textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    background: var(--cream);
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(122,158,126,0.15);
+    background: white;
+  }
+
+  /* radio / checkbox styled */
+  .radio-group, .check-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-btn, .check-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    user-select: none;
+    background: var(--cream);
+  }
+  .radio-btn input, .check-btn input { display: none; }
+  .radio-btn:hover, .check-btn:hover { border-color: var(--sage-light); background: rgba(122,158,126,0.07); }
+  .radio-btn.selected, .check-btn.selected {
+    border-color: var(--sage);
+    background: rgba(122,158,126,0.13);
+    color: var(--sage-dark);
+    font-weight: 600;
+  }
+
+  /* ── Section title ── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--sage-dark);
+    border-bottom: 2px solid var(--warm);
+    padding-bottom: 10px;
+    margin: 30px 0 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ── Food table ── */
+  .food-section { margin-bottom: 30px; }
+  .food-section h3 {
+    font-size: 1rem; font-weight: 600; color: var(--sage-dark);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead th {
+    background: var(--warm);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(122,158,126,0.04); }
+  tbody td { padding: 9px 14px; }
+  .food-name { font-weight: 500; }
+  .toggle-yes, .toggle-no {
+    padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+    background: var(--cream); cursor: pointer; font-size: 0.82rem; font-weight: 600;
+    transition: all 0.2s; color: var(--text-light);
+  }
+  .toggle-yes.active { background: #d4edda; border-color: #5aaa68; color: #2d6a38; }
+  .toggle-no.active  { background: #fde8e8; border-color: #e07070; color: #922; }
+  .qty-input {
+    width: 90px; padding: 5px 10px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.85rem; background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .qty-input:focus { border-color: var(--sage); outline: none; }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 36px; }
+  .btn {
+    padding: 13px 30px; border-radius: 30px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--sage-dark); color: white;
+    box-shadow: 0 4px 16px rgba(74,107,78,0.3);
+  }
+  .btn-primary:hover { background: var(--sage); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(74,107,78,0.4); }
+  .btn-secondary {
+    background: transparent; border: 1.5px solid var(--border); color: var(--text-light);
+  }
+  .btn-secondary:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+
+  /* ── Patient list ── */
+  #page-list .card-body { padding: 24px 36px; }
+  .search-bar {
+    display: flex; gap: 12px; margin-bottom: 24px; align-items: center;
+  }
+  .search-bar input {
+    flex: 1; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 30px;
+    font-size: 0.95rem; font-family: 'DM Sans', sans-serif; background: var(--cream);
+    outline: none;
+  }
+  .search-bar input:focus { border-color: var(--sage); }
+
+  .patient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+  .patient-card {
+    background: var(--cream); border-radius: 14px; padding: 20px;
+    border: 1.5px solid var(--border); cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .patient-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--sage);
+  }
+  .patient-card:hover { border-color: var(--sage-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(122,158,126,0.15); }
+  .patient-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 6px; padding-left: 8px; }
+  .patient-card p { font-size: 0.82rem; color: var(--text-light); padding-left: 8px; }
+  .patient-card .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600; margin-top: 8px; margin-left: 8px;
+    background: rgba(122,158,126,0.15); color: var(--sage-dark);
+  }
+  .no-patients { text-align: center; padding: 60px 20px; color: var(--text-light); }
+  .no-patients .big-icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* ── Summary page ── */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .summary-box {
+    background: var(--warm); border-radius: 12px; padding: 18px 20px;
+  }
+  .summary-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 10px; }
+  .summary-box p { font-size: 1rem; font-weight: 500; color: var(--text); }
+  .summary-table-wrap { margin-top: 24px; overflow-x: auto; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: var(--sage-dark); color: white;
+    padding: 14px 22px; border-radius: 12px;
+    font-size: 0.9rem; font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .card-body { padding: 20px; }
+    .card-header { padding: 20px; }
+    .btn-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">🌿</div>
+  <div>
+    <h1>NutriCare <span>— Fiche Diététique</span></h1>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-bar">
+    <div class="step-dot active" id="dot-0"><div class="dot-circle">👥</div><div class="dot-label">Patients</div></div>
+    <div class="step-dot" id="dot-1"><div class="dot-circle">1</div><div class="dot-label">Infos générales</div></div>
+    <div class="step-dot" id="dot-2"><div class="dot-circle">2</div><div class="dot-label">Petit déjeuner</div></div>
+    <div class="step-dot" id="dot-3"><div class="dot-circle">3</div><div class="dot-label">Déjeuner / Dîner</div></div>
+    <div class="step-dot" id="dot-4"><div class="dot-circle">4</div><div class="dot-label">Collation & Hydratation</div></div>
+    <div class="step-dot" id="dot-5"><div class="dot-circle">5</div><div class="dot-label">Ressenti</div></div>
+    <div class="step-dot" id="dot-6"><div class="dot-circle">✓</div><div class="dot-label">Récapitulatif</div></div>
+  </div>
+
+  <!-- ═══════════════ PAGE 0: LISTE PATIENTS ═══════════════ -->
+  <div id="page-list">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">👥</span>
+        <div><h2>Mes Patients</h2><p>Gérez et consultez les fiches de vos patients</p></div>
+      </div>
+      <div class="card-body">
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="🔍  Rechercher un patient…" oninput="filterPatients()">
+          <button class="btn btn-primary" onclick="newPatient()">+ Nouveau patient</button>
+        </div>
+        <div class="patient-grid" id="patient-grid">
+          <div class="no-patients">
+            <div class="big-icon">🌱</div>
+            <p>Aucun patient pour l'instant.<br>Commencez par en ajouter un.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 1: INFOS GÉNÉRALES ═══════════════ -->
+  <div id="page-1" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">👤</span>
+        <div><h2>Informations Générales</h2><p>Renseignez les données du patient</p></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nom et prénom</label>
+            <input type="text" id="f-nom" placeholder="ex : Amira Benali">
+          </div>
+          <div class="form-group">
+            <label>Âge</label>
+            <input type="number" id="f-age" placeholder="ex : 34" min="1" max="120">
+          </div>
+          <div class="form-group">
+            <label>Sexe</label>
+            <div class="radio-group" id="rg-sexe">
+              <label class="radio-btn"><input type="radio" name="sexe" value="Femme"> Femme</label>
+              <label class="radio-btn"><input type="radio" name="sexe" value="Homme"> Homme</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>IMC</label>
+            <input type="number" id="f-imc" placeholder="calculé automatiquement" step="0.1" readonly style="opacity:0.7">
+          </div>
+          <div class="form-group">
+            <label>Poids (kg)</label>
+            <input type="number" id="f-poids" placeholder="ex : 65" step="0.1" oninput="calcIMC()">
+          </div>
+          <div class="form-group">
+            <label>Taille (cm)</label>
+            <input type="number" id="f-taille" placeholder="ex : 165" oninput="calcIMC()">
+          </div>
+          <div class="form-group">
+            <label>Activité physique</label>
+            <div class="radio-group" id="rg-activite">
+              <label class="radio-btn"><input type="radio" name="activite" value="Faible"> Faible</label>
+              <label class="radio-btn"><input type="radio" name="activite" value="Modérée"> Modérée</label>
+              <label class="radio-btn"><input type="radio" name="activite" value="Intense"> Intense</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Objectif</label>
+            <div class="radio-group" id="rg-objectif">
+              <label class="radio-btn"><input type="radio" name="objectif" value="Perte de poids"> Perte de poids</label>
+              <label class="radio-btn"><input type="radio" name="objectif" value="Prise de masse"> Prise de masse</label>
+              <label class="radio-btn"><input type="radio" name="objectif" value="Équilibre"> Équilibre</label>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goList()">← Annuler</button>
+          <button class="btn btn-primary" onclick="goTo(2)">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 2: PETIT DÉJEUNER ═══════════════ -->
+  <div id="page-2" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🌅</span>
+        <div><h2>Petit Déjeuner</h2><p>Indiquez les aliments consommés le matin</p></div>
+      </div>
+      <div class="card-body">
+        <div class="food-section">
+          <table id="table-breakfast">
+            <thead><tr><th>Aliment</th><th>Oui</th><th>Non</th><th>Quantité</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goTo(1)">← Précédent</button>
+          <button class="btn btn-primary" onclick="goTo(3)">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 3: DÉJEUNER / DÎNER ═══════════════ -->
+  <div id="page-3" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🍽️</span>
+        <div><h2>Déjeuner / Dîner</h2><p>Aliments consommés au déjeuner et au dîner</p></div>
+      </div>
+      <div class="card-body">
+        <div class="food-section">
+          <table id="table-lunch">
+            <thead><tr><th>Aliment</th><th>Oui</th><th>Non</th><th>Quantité</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goTo(2)">← Précédent</button>
+          <button class="btn btn-primary" onclick="goTo(4)">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 4: COLLATION & HYDRATATION ═══════════════ -->
+  <div id="page-4" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🍪</span>
+        <div><h2>Collation & Hydratation</h2><p>Encas et consommation d'eau</p></div>
+      </div>
+      <div class="card-body">
+        <div class="section-title">🍪 Collation</div>
+        <div class="food-section">
+          <table id="table-snack">
+            <thead><tr><th>Aliment</th><th>Oui</th><th>Non</th><th>Quantité</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="section-title">💧 Hydratation — Eau (verres/jour)</div>
+        <div class="radio-group" id="rg-eau" style="margin-bottom:10px">
+          <label class="radio-btn"><input type="radio" name="eau" value="1–3 verres"> 1–3 verres</label>
+          <label class="radio-btn"><input type="radio" name="eau" value="4–6 verres"> 4–6 verres</label>
+          <label class="radio-btn"><input type="radio" name="eau" value="7–10 verres"> 7–10 verres</label>
+          <label class="radio-btn"><input type="radio" name="eau" value="+10 verres"> +10 verres</label>
+        </div>
+        <div class="section-title">🍽️ Type de repas</div>
+        <div class="check-group" id="cg-repas">
+          <label class="check-btn"><input type="checkbox" value="Fait maison"> Fait maison</label>
+          <label class="check-btn"><input type="checkbox" value="Fast-food"> Fast-food</label>
+          <label class="check-btn"><input type="checkbox" value="Restaurant"> Restaurant</label>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goTo(3)">← Précédent</button>
+          <button class="btn btn-primary" onclick="goTo(5)">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 5: RESSENTI ═══════════════ -->
+  <div id="page-5" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">⭐</span>
+        <div><h2>Ressenti & Habitudes</h2><p>Qualité de vie et comportements alimentaires</p></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Après les repas je me sens…</label>
+            <div class="radio-group" id="rg-apres">
+              <label class="radio-btn"><input type="radio" name="apres" value="Bien"> 😊 Bien</label>
+              <label class="radio-btn"><input type="radio" name="apres" value="Lourd(e)"> 😟 Lourd(e)</label>
+              <label class="radio-btn"><input type="radio" name="apres" value="Fatigué(e)"> 😴 Fatigué(e)</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Grignotage entre les repas</label>
+            <div class="radio-group" id="rg-grignotage">
+              <label class="radio-btn"><input type="radio" name="grignotage" value="Oui"> Oui</label>
+              <label class="radio-btn"><input type="radio" name="grignotage" value="Non"> Non</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Qualité du sommeil</label>
+            <div class="radio-group" id="rg-sommeil">
+              <label class="radio-btn"><input type="radio" name="sommeil" value="Bon"> 😴 Bon</label>
+              <label class="radio-btn"><input type="radio" name="sommeil" value="Moyen"> 😐 Moyen</label>
+              <label class="radio-btn"><input type="radio" name="sommeil" value="Mauvais"> 😣 Mauvais</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Niveau de stress</label>
+            <div class="radio-group" id="rg-stress">
+              <label class="radio-btn"><input type="radio" name="stress" value="Faible"> 🟢 Faible</label>
+              <label class="radio-btn"><input type="radio" name="stress" value="Moyen"> 🟡 Moyen</label>
+              <label class="radio-btn"><input type="radio" name="stress" value="Élevé"> 🔴 Élevé</label>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Notes / Observations (optionnel)</label>
+            <textarea id="f-notes" rows="4" placeholder="Remarques supplémentaires sur le patient…" style="resize:vertical"></textarea>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goTo(4)">← Précédent</button>
+          <button class="btn btn-primary" onclick="goTo(6)">Voir le récapitulatif →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE 6: RÉCAPITULATIF ═══════════════ -->
+  <div id="page-6" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">📋</span>
+        <div><h2>Récapitulatif</h2><p>Vérifiez et enregistrez la fiche du patient</p></div>
+      </div>
+      <div class="card-body" id="summary-body">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────
+const STORAGE_KEY = 'nutricare_patients';
+
+const BREAKFAST_FOODS = [
+  'Lait','Café','Thé','Sucre','Pain','Beurre',
+  'Confiture','Croissant','Chocolat à tartiner','Yaourt','Lait chocolaté'
+];
+const LUNCH_FOODS = [
+  'Légumes crus','Soupe','Œufs','Légumineuses','Riz','Pâtes',
+  'Fruits','Viande','VPO','Légumineuses (dîner)','Riz (dîner)','Pâtes (dîner)',
+  'Fruits (dîner)','Poisson (déj.)','Poisson (dîner)'
+];
+const SNACK_FOODS = ['Yaourt','Biscuits','Chocolat','Jus / Boisson'];
+
+let patients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let currentPatientIndex = -1; // -1 = new
+let currentPage = 'list';
+
+// food state per page
+let foodState = { breakfast: {}, lunch: {}, snack: {} };
+
+// ─── Save / Load ─────────────────────────────────────────────
+function savePatients() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
+}
+
+// ─── Toast ───────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── Navigation ──────────────────────────────────────────────
+function hideAll() {
+  ['page-list','page-1','page-2','page-3','page-4','page-5','page-6'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function setDots(active) {
+  for (let i = 0; i <= 6; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (!d) continue;
+    d.classList.remove('active','done');
+    if (i === active) d.classList.add('active');
+    else if (i < active) d.classList.add('done');
+  }
+}
+
+function goList() {
+  hideAll();
+  document.getElementById('page-list').style.display = 'block';
+  setDots(0);
+  renderPatientGrid();
+}
+
+function goTo(page) {
+  if (page === 2) buildFoodTable('table-breakfast', BREAKFAST_FOODS, 'breakfast');
+  if (page === 3) buildFoodTable('table-lunch', LUNCH_FOODS, 'lunch');
+  if (page === 4) { buildFoodTable('table-snack', SNACK_FOODS, 'snack'); restoreCheckMulti('cg-repas'); restoreRadio('rg-eau'); }
+  if (page === 6) buildSummary();
+  hideAll();
+  document.getElementById('page-' + page).style.display = 'block';
+  setDots(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Patients list ───────────────────────────────────────────
+function renderPatientGrid(filter = '') {
+  const grid = document.getElementById('patient-grid');
+  const filtered = patients.filter(p =>
+    p.nom.toLowerCase().includes(filter.toLowerCase())
+  );
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="no-patients" style="grid-column:1/-1"><div class="big-icon">🌱</div><p>Aucun patient trouvé.</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((p, i) => {
+    const ri = patients.indexOf(p);
+    const imc = p.imc ? `IMC : ${p.imc}` : '';
+    return `<div class="patient-card" onclick="viewPatient(${ri})">
+      <h3>${p.nom}</h3>
+      <p>${p.age ? p.age + ' ans' : ''}${p.age && p.sexe ? ' · ' : ''}${p.sexe || ''}</p>
+      ${imc ? `<p>${imc}</p>` : ''}
+      ${p.objectif ? `<span class="badge">${p.objectif}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function filterPatients() {
+  renderPatientGrid(document.getElementById('search-input').value);
+}
+
+function newPatient() {
+  currentPatientIndex = -1;
+  foodState = { breakfast: {}, lunch: {}, snack: {} };
+  clearForm();
+  goTo(1);
+}
+
+function viewPatient(index) {
+  currentPatientIndex = index;
+  const p = patients[index];
+  foodState = { breakfast: p.breakfast || {}, lunch: p.lunch || {}, snack: p.snack || {} };
+  populateForm(p);
+  goTo(1);
+}
+
+// ─── Form helpers ─────────────────────────────────────────────
+function clearForm() {
+  ['f-nom','f-age','f-imc','f-poids','f-taille','f-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('.radio-btn, .check-btn').forEach(el => el.classList.remove('selected'));
+}
+
+function populateForm(p) {
+  setVal('f-nom', p.nom);
+  setVal('f-age', p.age);
+  setVal('f-imc', p.imc);
+  setVal('f-poids', p.poids);
+  setVal('f-taille', p.taille);
+  setVal('f-notes', p.notes);
+  // radios restored on page load via goTo
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined) el.value = val;
+}
+
+function calcIMC() {
+  const p = parseFloat(document.getElementById('f-poids').value);
+  const t = parseFloat(document.getElementById('f-taille').value) / 100;
+  if (p && t) {
+    document.getElementById('f-imc').value = (p / (t * t)).toFixed(1);
+  }
+}
+
+// ─── Radio / check styled ─────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const rb = e.target.closest('.radio-btn');
+  if (rb) {
+    const name = rb.querySelector('input[type=radio]')?.name;
+    if (name) {
+      document.querySelectorAll(`.radio-btn input[name="${name}"]`).forEach(inp => {
+        inp.closest('.radio-btn').classList.remove('selected');
+      });
+    }
+    rb.classList.add('selected');
+    rb.querySelector('input').checked = true;
+  }
+  const cb = e.target.closest('.check-btn');
+  if (cb) {
+    cb.classList.toggle('selected');
+    cb.querySelector('input').checked = cb.classList.contains('selected');
+  }
+});
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function getChecked(groupId) {
+  return [...document.querySelectorAll(`#${groupId} input:checked`)].map(i => i.value);
+}
+
+function restoreRadio(groupId) {
+  // auto re-select from patient data if editing
+  if (currentPatientIndex < 0) return;
+  const p = patients[currentPatientIndex];
+  const map = { 'rg-eau': p.eau, 'rg-sexe': p.sexe, 'rg-activite': p.activite,
+    'rg-objectif': p.objectif, 'rg-apres': p.apresRepas, 'rg-grignotage': p.grignotage,
+    'rg-sommeil': p.sommeil, 'rg-stress': p.stress };
+  const val = map[groupId];
+  if (!val) return;
+  document.querySelectorAll(`#${groupId} .radio-btn`).forEach(rb => {
+    rb.classList.remove('selected');
+    if (rb.querySelector('input').value === val) {
+      rb.classList.add('selected');
+      rb.querySelector('input').checked = true;
+    }
+  });
+}
+
+function restoreCheckMulti(groupId) {
+  if (currentPatientIndex < 0) return;
+  const p = patients[currentPatientIndex];
+  const vals = p.typeRepas || [];
+  document.querySelectorAll(`#${groupId} .check-btn`).forEach(cb => {
+    const v = cb.querySelector('input').value;
+    if (vals.includes(v)) { cb.classList.add('selected'); cb.querySelector('input').checked = true; }
+    else { cb.classList.remove('selected'); cb.querySelector('input').checked = false; }
+  });
+}
+
+// ─── Food tables ──────────────────────────────────────────────
+function buildFoodTable(tableId, foods, key) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = '';
+  foods.forEach(food => {
+    const state = foodState[key][food] || { yn: '', qty: '' };
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="food-name">${food}</td>
+      <td><button class="toggle-yes${state.yn==='oui'?' active':''}" onclick="toggleFood('${key}','${food}','oui',this)">✔ Oui</button></td>
+      <td><button class="toggle-no${state.yn==='non'?' active':''}" onclick="toggleFood('${key}','${food}','non',this)">✖ Non</button></td>
+      <td><input class="qty-input" type="text" placeholder="quantité" value="${state.qty||''}" oninput="setQty('${key}','${food}',this.value)"></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function toggleFood(key, food, yn, btn) {
+  if (!foodState[key][food]) foodState[key][food] = {};
+  const prev = foodState[key][food].yn;
+  foodState[key][food].yn = prev === yn ? '' : yn;
+  // update buttons
+  const row = btn.closest('tr');
+  row.querySelector('.toggle-yes').classList.toggle('active', foodState[key][food].yn === 'oui');
+  row.querySelector('.toggle-no').classList.toggle('active', foodState[key][food].yn === 'non');
+}
+
+function setQty(key, food, val) {
+  if (!foodState[key][food]) foodState[key][food] = {};
+  foodState[key][food].qty = val;
+}
+
+// ─── Summary + Save ───────────────────────────────────────────
+function buildSummary() {
+  // restore radios for pages not yet visited if editing
+  ['rg-sexe','rg-activite','rg-objectif','rg-apres','rg-grignotage','rg-sommeil','rg-stress'].forEach(restoreRadio);
+
+  const nom       = document.getElementById('f-nom').value;
+  const age       = document.getElementById('f-age').value;
+  const poids     = document.getElementById('f-poids').value;
+  const taille    = document.getElementById('f-taille').value;
+  const imc       = document.getElementById('f-imc').value;
+  const notes     = document.getElementById('f-notes').value;
+  const sexe      = getRadio('sexe');
+  const activite  = getRadio('activite');
+  const objectif  = getRadio('objectif');
+  const apresRepas= getRadio('apres');
+  const grignotage= getRadio('grignotage');
+  const sommeil   = getRadio('sommeil');
+  const stress    = getRadio('stress');
+  const eau       = getRadio('eau');
+  const typeRepas = getChecked('cg-repas');
+
+  // build food summary rows
+  function foodRows(key, foods) {
+    return foods.map(f => {
+      const s = foodState[key][f] || {};
+      if (!s.yn) return '';
+      return `<tr><td>${f}</td><td>${s.yn === 'oui' ? '✔' : '✖'}</td><td>${s.qty || '—'}</td></tr>`;
+    }).filter(Boolean).join('');
+  }
+
+  document.getElementById('summary-body').innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-box"><h4>Nom</h4><p>${nom || '—'}</p></div>
+      <div class="summary-box"><h4>Âge / Sexe</h4><p>${age ? age + ' ans' : '—'} · ${sexe || '—'}</p></div>
+      <div class="summary-box"><h4>Poids / Taille</h4><p>${poids ? poids + ' kg' : '—'} / ${taille ? taille + ' cm' : '—'}</p></div>
+      <div class="summary-box"><h4>IMC</h4><p>${imc || '—'}</p></div>
+      <div class="summary-box"><h4>Activité physique</h4><p>${activite || '—'}</p></div>
+      <div class="summary-box"><h4>Objectif</h4><p>${objectif || '—'}</p></div>
+      <div class="summary-box"><h4>Après les repas</h4><p>${apresRepas || '—'}</p></div>
+      <div class="summary-box"><h4>Grignotage</h4><p>${grignotage || '—'}</p></div>
+      <div class="summary-box"><h4>Sommeil</h4><p>${sommeil || '—'}</p></div>
+      <div class="summary-box"><h4>Stress</h4><p>${stress || '—'}</p></div>
+      <div class="summary-box"><h4>Eau / jour</h4><p>${eau || '—'}</p></div>
+      <div class="summary-box"><h4>Type de repas</h4><p>${typeRepas.length ? typeRepas.join(', ') : '—'}</p></div>
+    </div>
+
+    ${foodRows('breakfast', BREAKFAST_FOODS) ? `
+    <div class="section-title" style="margin-top:28px">🌅 Petit déjeuner</div>
+    <div class="summary-table-wrap"><table>
+      <thead><tr><th>Aliment</th><th>Consommé</th><th>Quantité</th></tr></thead>
+      <tbody>${foodRows('breakfast', BREAKFAST_FOODS)}</tbody>
+    </table></div>` : ''}
+
+    ${foodRows('lunch', LUNCH_FOODS) ? `
+    <div class="section-title">🍽️ Déjeuner / Dîner</div>
+    <div class="summary-table-wrap"><table>
+      <thead><tr><th>Aliment</th><th>Consommé</th><th>Quantité</th></tr></thead>
+      <tbody>${foodRows('lunch', LUNCH_FOODS)}</tbody>
+    </table></div>` : ''}
+
+    ${foodRows('snack', SNACK_FOODS) ? `
+    <div class="section-title">🍪 Collation</div>
+    <div class="summary-table-wrap"><table>
+      <thead><tr><th>Aliment</th><th>Consommé</th><th>Quantité</th></tr></thead>
+      <tbody>${foodRows('snack', SNACK_FOODS)}</tbody>
+    </table></div>` : ''}
+
+    ${notes ? `<div class="section-title">📝 Notes</div><p style="color:var(--text-light);line-height:1.6">${notes}</p>` : ''}
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goTo(5)">← Modifier</button>
+      <button class="btn btn-primary" onclick="savePatient()">💾 Enregistrer la fiche</button>
+    </div>
+  `;
+}
+
+function savePatient() {
+  const nom = document.getElementById('f-nom').value.trim();
+  if (!nom) { showToast('⚠️  Veuillez saisir le nom du patient.'); return; }
+
+  const record = {
+    nom,
+    age:       document.getElementById('f-age').value,
+    sexe:      getRadio('sexe'),
+    poids:     document.getElementById('f-poids').value,
+    taille:    document.getElementById('f-taille').value,
+    imc:       document.getElementById('f-imc').value,
+    activite:  getRadio('activite'),
+    objectif:  getRadio('objectif'),
+    apresRepas:getRadio('apres'),
+    grignotage:getRadio('grignotage'),
+    sommeil:   getRadio('sommeil'),
+    stress:    getRadio('stress'),
+    eau:       getRadio('eau'),
+    typeRepas: getChecked('cg-repas'),
+    notes:     document.getElementById('f-notes').value,
+    breakfast: JSON.parse(JSON.stringify(foodState.breakfast)),
+    lunch:     JSON.parse(JSON.stringify(foodState.lunch)),
+    snack:     JSON.parse(JSON.stringify(foodState.snack)),
+    savedAt:   new Date().toLocaleString('fr-FR')
+  };
+
+  if (currentPatientIndex >= 0) {
+    patients[currentPatientIndex] = record;
+    showToast('✅  Fiche mise à jour avec succès !');
+  } else {
+    patients.unshift(record);
+    showToast('✅  Nouveau patient enregistré !');
+  }
+  savePatients();
+  setTimeout(goList, 1200);
+}
+
+// ─── Init ─────────────────────────────────────────────────────
+goList();
+</script>
+</body>
+</html>

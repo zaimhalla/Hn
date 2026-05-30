@@ -354,16 +354,16 @@
             </div>
           </div>
           <div class="form-group">
-            <label data-fr="IMC" data-ar="مؤشر كتلة الجسم">IMC</label>
-            <input type="number" id="f-imc" data-placeholder-fr="calculé automatiquement" data-placeholder-ar="يُحسب تلقائياً" placeholder="calculé automatiquement" step="0.1" readonly style="opacity:.7">
-          </div>
-          <div class="form-group">
             <label data-fr="Poids (kg)" data-ar="الوزن (كغ)">Poids (kg)</label>
             <input type="number" id="f-poids" data-placeholder-fr="ex : 65" data-placeholder-ar="مثال: 65" placeholder="ex : 65" step="0.1" oninput="calcIMC()">
           </div>
           <div class="form-group">
             <label data-fr="Taille (cm)" data-ar="الطول (سم)">Taille (cm)</label>
             <input type="number" id="f-taille" data-placeholder-fr="ex : 165" data-placeholder-ar="مثال: 165" placeholder="ex : 165" oninput="calcIMC()">
+          </div>
+          <div class="form-group">
+            <label data-fr="IMC — calculé auto." data-ar="مؤشر كتلة الجسم — تلقائي">IMC — calculé auto.</label>
+            <input type="number" id="f-imc" data-placeholder-fr="— calculé après poids + taille —" data-placeholder-ar="— يُحسب بعد الوزن والطول —" placeholder="— calculé après poids + taille —" step="0.1" readonly style="opacity:.65;background:var(--warm);cursor:default">
           </div>
           <div class="form-group full">
             <label data-fr="Activité physique" data-ar="النشاط البدني">Activité physique</label>
@@ -384,7 +384,7 @@
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goList()" data-fr="← Annuler" data-ar="← إلغاء">← Annuler</button>
-          <button class="btn btn-primary" onclick="goTo(2)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
+          <button class="btn btn-primary" onclick="validateAndGoTo(2)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
         </div>
       </div>
     </div>
@@ -405,13 +405,13 @@
           <span class="meal-title" data-fr="🌅 Petit déjeuner" data-ar="🌅 الفطور">🌅 Petit déjeuner</span>
           <div class="meal-time-group">
             <label data-fr="Heure habituelle :" data-ar="الوقت المعتاد:">Heure habituelle :</label>
-            <input type="time" id="time-breakfast">
+            <input type="time" id="time-breakfast" disabled style="opacity:.4;cursor:not-allowed">
           </div>
           <div class="meal-skip-group">
             <span class="meal-skip-label" data-fr="Prend le petit déjeuner ?" data-ar="هل يتناول الفطور؟">Prend le petit déjeuner ?</span>
             <div class="radio-group" id="rg-hasPetitDej">
-              <label class="radio-btn"><input type="radio" name="hasPetitDej" value="oui" onchange="toggleMealSection('breakfast',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
-              <label class="radio-btn"><input type="radio" name="hasPetitDej" value="non" onchange="toggleMealSection('breakfast',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
+              <label class="radio-btn"><input type="radio" name="hasPetitDej" value="oui" onchange="toggleMealSection('breakfast',true); enableTime('time-breakfast',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
+              <label class="radio-btn"><input type="radio" name="hasPetitDej" value="non" onchange="toggleMealSection('breakfast',false); enableTime('time-breakfast',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
             </div>
           </div>
         </div>
@@ -432,7 +432,7 @@
         <div id="skip-breakfast" style="display:none" class="skipped-notice" data-fr="⏭️ Le patient ne prend pas le petit déjeuner." data-ar="⏭️ المريض لا يتناول وجبة الفطور.">⏭️ Le patient ne prend pas le petit déjeuner.</div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goTo(1)" data-fr="← Précédent" data-ar="← السابق">← Précédent</button>
-          <button class="btn btn-primary" onclick="goTo(3)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
+          <button class="btn btn-primary" onclick="validateAndGoTo(3)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
         </div>
       </div>
     </div>
@@ -455,13 +455,13 @@
           <span class="meal-title" data-fr="☀️ Déjeuner" data-ar="☀️ الغداء">☀️ Déjeuner</span>
           <div class="meal-time-group">
             <label data-fr="Heure habituelle :" data-ar="الوقت المعتاد:">Heure habituelle :</label>
-            <input type="time" id="time-lunch">
+            <input type="time" id="time-lunch" disabled style="opacity:.4;cursor:not-allowed">
           </div>
           <div class="meal-skip-group">
             <span class="meal-skip-label" data-fr="Déjeune ?" data-ar="هل يتغدى؟">Déjeune ?</span>
             <div class="radio-group" id="rg-hasLunch">
-              <label class="radio-btn"><input type="radio" name="hasLunch" value="oui" onchange="toggleMealSection('lunch',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
-              <label class="radio-btn"><input type="radio" name="hasLunch" value="non" onchange="toggleMealSection('lunch',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
+              <label class="radio-btn"><input type="radio" name="hasLunch" value="oui" onchange="toggleMealSection('lunch',true); enableTime('time-lunch',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
+              <label class="radio-btn"><input type="radio" name="hasLunch" value="non" onchange="toggleMealSection('lunch',false); enableTime('time-lunch',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
             </div>
           </div>
         </div>
@@ -486,13 +486,13 @@
           <span class="meal-title" data-fr="🌙 Dîner" data-ar="🌙 العشاء">🌙 Dîner</span>
           <div class="meal-time-group">
             <label data-fr="Heure habituelle :" data-ar="الوقت المعتاد:">Heure habituelle :</label>
-            <input type="time" id="time-dinner">
+            <input type="time" id="time-dinner" disabled style="opacity:.4;cursor:not-allowed">
           </div>
           <div class="meal-skip-group">
             <span class="meal-skip-label" data-fr="Dîne ?" data-ar="هل يتعشى؟">Dîne ?</span>
             <div class="radio-group" id="rg-hasDinner">
-              <label class="radio-btn"><input type="radio" name="hasDinner" value="oui" onchange="toggleMealSection('dinner',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
-              <label class="radio-btn"><input type="radio" name="hasDinner" value="non" onchange="toggleMealSection('dinner',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
+              <label class="radio-btn"><input type="radio" name="hasDinner" value="oui" onchange="toggleMealSection('dinner',true); enableTime('time-dinner',true)"><span data-fr="Oui" data-ar="نعم">Oui</span></label>
+              <label class="radio-btn"><input type="radio" name="hasDinner" value="non" onchange="toggleMealSection('dinner',false); enableTime('time-dinner',false)"><span data-fr="Non" data-ar="لا">Non</span></label>
             </div>
           </div>
         </div>
@@ -514,7 +514,7 @@
 
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goTo(2)" data-fr="← Précédent" data-ar="← السابق">← Précédent</button>
-          <button class="btn btn-primary" onclick="goTo(4)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
+          <button class="btn btn-primary" onclick="validateAndGoTo(4)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
         </div>
       </div>
     </div>
@@ -553,13 +553,13 @@
         </div>
         <div class="section-title" data-fr="🍽️ Type de repas" data-ar="🍽️ نوع الوجبات">🍽️ Type de repas</div>
         <div class="check-group" id="cg-repas">
-          <label class="check-btn"><input type="checkbox" value="Fait maison"><span data-fr="Fait maison" data-ar="منزلي">Fait maison</span></label>
-          <label class="check-btn"><input type="checkbox" value="Fast-food"><span data-fr="Fast-food" data-ar="وجبات سريعة">Fast-food</span></label>
-          <label class="check-btn"><input type="checkbox" value="Restaurant"><span data-fr="Restaurant" data-ar="مطعم">Restaurant</span></label>
+          <button type="button" class="check-btn" data-value="Fait maison" onclick="toggleRepas(this)"><span data-fr="Fait maison" data-ar="منزلي">Fait maison</span></button>
+          <button type="button" class="check-btn" data-value="Fast-food" onclick="toggleRepas(this)"><span data-fr="Fast-food" data-ar="وجبات سريعة">Fast-food</span></button>
+          <button type="button" class="check-btn" data-value="Restaurant" onclick="toggleRepas(this)"><span data-fr="Restaurant" data-ar="مطعم">Restaurant</span></button>
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goTo(3)" data-fr="← Précédent" data-ar="← السابق">← Précédent</button>
-          <button class="btn btn-primary" onclick="goTo(5)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
+          <button class="btn btn-primary" onclick="validateAndGoTo(5)" data-fr="Suivant →" data-ar="التالي →">Suivant →</button>
         </div>
       </div>
     </div>
@@ -616,7 +616,7 @@
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="goTo(4)" data-fr="← Précédent" data-ar="← السابق">← Précédent</button>
-          <button class="btn btn-primary" onclick="goTo(6)" data-fr="Voir le récapitulatif →" data-ar="عرض الملخص →">Voir le récapitulatif →</button>
+          <button class="btn btn-primary" onclick="validateAndGoTo(6)" data-fr="Voir le récapitulatif →" data-ar="عرض الملخص →">Voir le récapitulatif →</button>
         </div>
       </div>
     </div>
@@ -641,55 +641,72 @@
 
 <script>
 // ══════════════════════════════════════════════════════
-//  CONFIG
+//  CONFIG & TRANSLATIONS
 // ══════════════════════════════════════════════════════
-const STORAGE_KEY = 'nutricare_patients_v2';
+const STORAGE_KEY = 'nutricare_patients_v3';
 let currentLang = 'fr';
 
 const T = {
   fr: {
-    noPatient: "Aucun patient trouvé.",
     noPatientFull: "Aucun patient pour l'instant.<br>Commencez par en ajouter un.",
-    saved: "✅  Nouveau patient enregistré !",
+    saved:   "✅  Nouveau patient enregistré !",
     updated: "✅  Fiche mise à jour avec succès !",
-    nameRequired: "⚠️  Veuillez saisir le nom du patient.",
-    skipped: (m) => `⏭️ Le patient ne prend pas ${m}.`,
-    skippedAr: (m) => `⏭️ المريض لا يتناول ${m}.`,
     oui:'Oui', non:'Non', parfois:'Parfois',
-    aliment:'Aliment', quantite:'Quantité',
-    consomme:'Consommé',
-    heure:'Heure',
-    summary_title: 'Récapitulatif — ',
     saveBtn: '💾 Enregistrer la fiche',
     editBtn: '← Modifier',
-    timeLabel: 'Heure'
+    // Validation messages
+    v_nom:       "⚠️  Nom et prénom obligatoire.",
+    v_age:       "⚠️  Âge obligatoire.",
+    v_sexe:      "⚠️  Veuillez indiquer le sexe.",
+    v_poids:     "⚠️  Poids obligatoire.",
+    v_taille:    "⚠️  Taille obligatoire.",
+    v_activite:  "⚠️  Veuillez indiquer l'activité physique.",
+    v_objectif:  "⚠️  Veuillez indiquer l'objectif.",
+    v_breakfast: "⚠️  Indiquez si le patient prend le petit déjeuner.",
+    v_lunch:     "⚠️  Indiquez si le patient déjeune.",
+    v_dinner:    "⚠️  Indiquez si le patient dîne.",
+    v_bkf_items: "⚠️  Chaque aliment doit avoir une réponse (Oui / Non / Parfois).",
+    v_eau:       "⚠️  Indiquez la quantité d'eau consommée.",
+    v_repas:     "⚠️  Veuillez choisir au moins un type de repas.",
+    v_apres:     "⚠️  Comment se sent le patient après les repas ?",
+    v_grigno:    "⚠️  Indiquez s'il y a du grignotage.",
+    v_sommeil:   "⚠️  Indiquez la qualité du sommeil.",
+    v_stress:    "⚠️  Indiquez le niveau de stress.",
   },
   ar: {
-    noPatient: "لا يوجد مريض.",
     noPatientFull: "لا يوجد مرضى حتى الآن.<br>ابدأ بإضافة مريض جديد.",
-    saved: "✅  تم تسجيل المريض الجديد!",
+    saved:   "✅  تم تسجيل المريض الجديد!",
     updated: "✅  تم تحديث الملف بنجاح!",
-    nameRequired: "⚠️  يرجى إدخال اسم المريض.",
     oui:'نعم', non:'لا', parfois:'أحياناً',
-    aliment:'الطعام', quantite:'الكمية',
-    consomme:'متناول',
-    heure:'الوقت',
-    summary_title: 'ملخص — ',
     saveBtn: '💾 حفظ الملف',
     editBtn: '← تعديل',
-    timeLabel: 'الوقت'
+    v_nom:       "⚠️  الاسم الكامل مطلوب.",
+    v_age:       "⚠️  العمر مطلوب.",
+    v_sexe:      "⚠️  يرجى تحديد الجنس.",
+    v_poids:     "⚠️  الوزن مطلوب.",
+    v_taille:    "⚠️  الطول مطلوب.",
+    v_activite:  "⚠️  يرجى تحديد النشاط البدني.",
+    v_objectif:  "⚠️  يرجى تحديد الهدف.",
+    v_breakfast: "⚠️  هل يتناول المريض الفطور؟",
+    v_lunch:     "⚠️  هل يتناول المريض الغداء؟",
+    v_dinner:    "⚠️  هل يتناول المريض العشاء؟",
+    v_bkf_items: "⚠️  كل طعام يجب أن يحدد (نعم / لا / أحياناً).",
+    v_eau:       "⚠️  يرجى تحديد كمية الماء.",
+    v_repas:     "⚠️  يرجى اختيار نوع الوجبات.",
+    v_apres:     "⚠️  كيف يشعر المريض بعد الوجبات؟",
+    v_grigno:    "⚠️  هل هناك تقطير بين الوجبات؟",
+    v_sommeil:   "⚠️  يرجى تحديد جودة النوم.",
+    v_stress:    "⚠️  يرجى تحديد مستوى التوتر.",
   }
 };
 
+// ── Food lists ──────────────────────────────────────────
 const BREAKFAST_FOODS_FR = ['Lait','Café','Thé','Sucre','Pain','Beurre','Confiture','Croissant','Chocolat à tartiner','Yaourt','Lait chocolaté'];
 const BREAKFAST_FOODS_AR = ['حليب','قهوة','شاي','سكر','خبز','زبدة','مربى','كروسان','شوكولا للدهن','زبادي','حليب بالشوكولا'];
-
-const LUNCH_FOODS_FR = ['Légumes crus','Soupe','Œufs','Légumineuses','Riz','Pâtes','Fruits','Viande','Légumineuses','Riz','Pâtes','Fruits','Poisson','Poisson'];
-const LUNCH_FOODS_AR = ['خضار نيئة','شوربة','بيض','بقوليات','أرز','مكرونة','فواكه','لحم','بقوليات','أرز','مكرونة','فواكه','سمك','سمك'];
-
-const DINNER_FOODS_FR = ['Légumes crus','Soupe','Œufs','Légumineuses','Riz','Pâtes','Fruits','Viande','Légumineuses','Poisson'];
-const DINNER_FOODS_AR = ['خضار نيئة','شوربة','بيض','بقوليات','أرز','مكرونة','فواكه','لحم','بقوليات','سمك'];
-
+const LUNCH_FOODS_FR = ['Légumes crus','Soupe','Œufs','Légumineuses','Riz','Pâtes','Fruits','Viande','Poisson'];
+const LUNCH_FOODS_AR = ['خضار نيئة','شوربة','بيض','بقوليات','أرز','مكرونة','فواكه','لحم','سمك'];
+const DINNER_FOODS_FR = ['Légumes crus','Soupe','Œufs','Légumineuses','Riz','Pâtes','Fruits','Viande','Poisson'];
+const DINNER_FOODS_AR = ['خضار نيئة','شوربة','بيض','بقوليات','أرز','مكرونة','فواكه','لحم','سمك'];
 const SNACK_FOODS_FR = ['Yaourt','Biscuits','Chocolat','Jus / Boisson'];
 const SNACK_FOODS_AR = ['زبادي','بسكويت','شوكولا','عصير / مشروب'];
 
@@ -702,7 +719,6 @@ function getFoods(key) {
   };
   return map[key];
 }
-// canonical (FR) keys for storage
 function getFoodsKey(key) {
   return { breakfast:BREAKFAST_FOODS_FR, lunch:LUNCH_FOODS_FR, dinner:DINNER_FOODS_FR, snack:SNACK_FOODS_FR }[key];
 }
@@ -719,26 +735,18 @@ function setLang(lang) {
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === lang));
-
-  // Update all data-fr/data-ar elements
   document.querySelectorAll('[data-fr]').forEach(el => {
     const val = el.getAttribute('data-' + lang);
     if (val) el.innerHTML = val;
   });
-  // placeholders
   document.querySelectorAll('[data-placeholder-fr]').forEach(el => {
     el.placeholder = el.getAttribute('data-placeholder-' + lang) || el.placeholder;
   });
-  // header subtitle
   document.getElementById('hdr-sub').textContent = lang === 'ar' ? '— بطاقة التغذية' : '— Fiche Diététique';
   document.title = lang === 'ar' ? 'NutriCare — بطاقة التغذية' : 'NutriCare — Fiche Diététique';
-
-  // rebuild visible food tables
   ['breakfast','lunch','dinner','snack'].forEach(k => {
     const tid = 'table-' + k;
-    if (document.getElementById(tid)) {
-      buildFoodTable(tid, getFoodsKey(k), getFoods(k), k);
-    }
+    if (document.getElementById(tid)) buildFoodTable(tid, getFoodsKey(k), getFoods(k), k);
   });
 }
 
@@ -747,10 +755,13 @@ function setLang(lang) {
 // ══════════════════════════════════════════════════════
 function savePatients() { localStorage.setItem(STORAGE_KEY, JSON.stringify(patients)); }
 
-function showToast(msg) {
+function showToast(msg, isError) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent = msg;
+  t.style.background = isError ? '#b94040' : 'var(--sage-dark)';
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 function hideAll() {
@@ -778,18 +789,18 @@ function goList() {
 function goTo(page) {
   if (page === 2) {
     buildFoodTable('table-breakfast', getFoodsKey('breakfast'), getFoods('breakfast'), 'breakfast');
-    restoreSkip('breakfast'); restoreTime('time-breakfast'); restoreRadioGroup('rg-hasPetitDej');
+    restoreSkip('breakfast'); restoreTimeInput('time-breakfast','has_breakfast'); restoreRadioGroup('rg-hasPetitDej');
   }
   if (page === 3) {
     buildFoodTable('table-lunch',  getFoodsKey('lunch'),  getFoods('lunch'),  'lunch');
     buildFoodTable('table-dinner', getFoodsKey('dinner'), getFoods('dinner'), 'dinner');
     restoreSkip('lunch'); restoreSkip('dinner');
-    restoreTime('time-lunch'); restoreTime('time-dinner');
+    restoreTimeInput('time-lunch','has_lunch'); restoreTimeInput('time-dinner','has_dinner');
     restoreRadioGroup('rg-hasLunch'); restoreRadioGroup('rg-hasDinner');
   }
   if (page === 4) {
     buildFoodTable('table-snack', getFoodsKey('snack'), getFoods('snack'), 'snack');
-    restoreCheckMulti('cg-repas'); restoreRadioGroup('rg-eau');
+    restoreRepasButtons(); restoreRadioGroup('rg-eau');
   }
   if (page === 6) buildSummary();
   hideAll();
@@ -799,11 +810,112 @@ function goTo(page) {
 }
 
 // ══════════════════════════════════════════════════════
+//  VALIDATION — called before advancing
+// ══════════════════════════════════════════════════════
+function validateAndGoTo(nextPage) {
+  const currentPage = nextPage - 1;
+  const err = validatePage(currentPage);
+  if (err) { showToast(err, true); highlightError(currentPage); return; }
+  goTo(nextPage);
+}
+
+function validatePage(page) {
+  const L = T[currentLang];
+  if (page === 1) {
+    if (!document.getElementById('f-nom').value.trim()) return L.v_nom;
+    if (!document.getElementById('f-age').value) return L.v_age;
+    if (!getRadio('sexe')) return L.v_sexe;
+    if (!document.getElementById('f-poids').value) return L.v_poids;
+    if (!document.getElementById('f-taille').value) return L.v_taille;
+    if (!getRadio('activite')) return L.v_activite;
+    if (!getRadio('objectif')) return L.v_objectif;
+  }
+  if (page === 2) {
+    if (!getRadio('hasPetitDej')) return L.v_breakfast;
+    if (getRadio('hasPetitDej') === 'oui') {
+      const allAnswered = getFoodsKey('breakfast').every(fk => foodState.breakfast[fk] && foodState.breakfast[fk].yn);
+      if (!allAnswered) return L.v_bkf_items;
+    }
+  }
+  if (page === 3) {
+    if (!getRadio('hasLunch'))  return L.v_lunch;
+    if (!getRadio('hasDinner')) return L.v_dinner;
+    if (getRadio('hasLunch') === 'oui') {
+      const allAnswered = getFoodsKey('lunch').every(fk => foodState.lunch[fk] && foodState.lunch[fk].yn);
+      if (!allAnswered) return L.v_bkf_items;
+    }
+    if (getRadio('hasDinner') === 'oui') {
+      const allAnswered = getFoodsKey('dinner').every(fk => foodState.dinner[fk] && foodState.dinner[fk].yn);
+      if (!allAnswered) return L.v_bkf_items;
+    }
+  }
+  if (page === 4) {
+    if (!getRadio('eau')) return L.v_eau;
+    if (getRepasSelected().length === 0) return L.v_repas;
+  }
+  if (page === 5) {
+    if (!getRadio('apres'))      return L.v_apres;
+    if (!getRadio('grignotage')) return L.v_grigno;
+    if (!getRadio('sommeil'))    return L.v_sommeil;
+    if (!getRadio('stress'))     return L.v_stress;
+  }
+  return null;
+}
+
+function highlightError(page) {
+  // brief shake on card body
+  const card = document.querySelector(`#page-${page} .card`);
+  if (!card) return;
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'shake .3s ease';
+}
+
+// add shake keyframe once
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}';
+document.head.appendChild(shakeStyle);
+
+// ══════════════════════════════════════════════════════
+//  TIME INPUT ENABLE/DISABLE
+// ══════════════════════════════════════════════════════
+function enableTime(inputId, enable) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.disabled = !enable;
+  el.style.opacity = enable ? '1' : '.35';
+  el.style.cursor  = enable ? 'auto' : 'not-allowed';
+  if (!enable) el.value = '';
+}
+
+// ══════════════════════════════════════════════════════
 //  MEAL SKIP TOGGLE
 // ══════════════════════════════════════════════════════
 function toggleMealSection(meal, show) {
   document.getElementById('section-' + meal).style.display = show ? 'block' : 'none';
-  document.getElementById('skip-' + meal).style.display = show ? 'none' : 'block';
+  document.getElementById('skip-' + meal).style.display    = show ? 'none'  : 'block';
+}
+
+// ══════════════════════════════════════════════════════
+//  TYPE DE REPAS — pure button toggle (no hidden inputs)
+// ══════════════════════════════════════════════════════
+function toggleRepas(btn) {
+  btn.classList.toggle('selected');
+}
+
+function getRepasSelected() {
+  return [...document.querySelectorAll('#cg-repas .check-btn.selected')].map(b => b.dataset.value);
+}
+
+function restoreRepasButtons() {
+  if (currentPatientIndex < 0) {
+    document.querySelectorAll('#cg-repas .check-btn').forEach(b => b.classList.remove('selected'));
+    return;
+  }
+  const vals = patients[currentPatientIndex].typeRepas || [];
+  document.querySelectorAll('#cg-repas .check-btn').forEach(b =>
+    b.classList.toggle('selected', vals.includes(b.dataset.value))
+  );
 }
 
 // ══════════════════════════════════════════════════════
@@ -851,70 +963,72 @@ function viewPatient(index) {
 //  FORM HELPERS
 // ══════════════════════════════════════════════════════
 function clearForm() {
-  ['f-nom','f-age','f-imc','f-poids','f-taille','f-notes','time-breakfast','time-lunch','time-dinner'].forEach(id => {
+  ['f-nom','f-age','f-imc','f-poids','f-taille','f-notes'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.querySelectorAll('.radio-btn,.check-btn').forEach(el => { el.classList.remove('selected'); const inp = el.querySelector('input'); if(inp) inp.checked=false; });
-  ['breakfast','lunch','dinner'].forEach(m => { toggleMealSection(m, true); });
+  // disable all time inputs and clear them
+  ['time-breakfast','time-lunch','time-dinner'].forEach(id => enableTime(id, false));
+  document.querySelectorAll('.radio-btn').forEach(el => {
+    el.classList.remove('selected');
+    const inp = el.querySelector('input'); if (inp) inp.checked = false;
+  });
+  document.querySelectorAll('#cg-repas .check-btn').forEach(b => b.classList.remove('selected'));
+  ['breakfast','lunch','dinner'].forEach(m => toggleMealSection(m, true));
 }
 
 function populateForm(p) {
-  ['f-nom','f-age','f-imc','f-poids','f-taille','f-notes'].forEach(id => setVal(id, p[id.replace('f-','')]));
   setVal('f-nom', p.nom); setVal('f-age', p.age); setVal('f-imc', p.imc);
   setVal('f-poids', p.poids); setVal('f-taille', p.taille); setVal('f-notes', p.notes);
 }
 
 function setVal(id, val) {
   const el = document.getElementById(id);
-  if (el && val !== undefined && val !== null) el.value = val;
+  if (el && val !== undefined && val !== null && val !== '') el.value = val;
 }
 
 function calcIMC() {
   const p = parseFloat(document.getElementById('f-poids').value);
   const t = parseFloat(document.getElementById('f-taille').value) / 100;
-  if (p && t) document.getElementById('f-imc').value = (p/(t*t)).toFixed(1);
+  const el = document.getElementById('f-imc');
+  if (p && t) { el.value = (p/(t*t)).toFixed(1); }
+  else { el.value = ''; }
 }
 
-function restoreTime(inputId) {
-  if (currentPatientIndex < 0) return;
-  const p = patients[currentPatientIndex];
-  const key = inputId.replace('time-','') + 'Time';
-  setVal(inputId, p[key]);
+function restoreTimeInput(inputId, hasKey) {
+  // first set enable state based on 'oui'/'non'
+  const p = currentPatientIndex >= 0 ? patients[currentPatientIndex] : null;
+  const has = p ? p[hasKey] : null;
+  enableTime(inputId, has === 'oui');
+  if (p && has === 'oui') {
+    const timeKey = inputId.replace('time-','') + 'Time';
+    setVal(inputId, p[timeKey]);
+  }
 }
 
 function restoreSkip(meal) {
   if (currentPatientIndex < 0) { toggleMealSection(meal, true); return; }
-  const p = patients[currentPatientIndex];
-  const has = p['has_' + meal];
-  if (has === 'non') toggleMealSection(meal, false);
-  else toggleMealSection(meal, true);
+  const has = patients[currentPatientIndex]['has_' + meal];
+  toggleMealSection(meal, has !== 'non');
 }
 
 // ══════════════════════════════════════════════════════
-//  RADIO / CHECK INTERACTION
+//  RADIO INTERACTION
 // ══════════════════════════════════════════════════════
 document.addEventListener('click', function(e) {
   const rb = e.target.closest('.radio-btn');
-  if (rb) {
-    const name = rb.querySelector('input[type=radio]')?.name;
-    if (name) document.querySelectorAll(`.radio-btn input[name="${name}"]`).forEach(inp => inp.closest('.radio-btn').classList.remove('selected'));
+  if (rb && rb.querySelector('input[type=radio]')) {
+    const name = rb.querySelector('input[type=radio]').name;
+    document.querySelectorAll(`.radio-btn input[name="${name}"]`).forEach(inp =>
+      inp.closest('.radio-btn').classList.remove('selected')
+    );
     rb.classList.add('selected');
     rb.querySelector('input').checked = true;
-  }
-  const cb = e.target.closest('.check-btn');
-  if (cb) {
-    cb.classList.toggle('selected');
-    cb.querySelector('input').checked = cb.classList.contains('selected');
   }
 });
 
 function getRadio(name) {
   const el = document.querySelector(`input[name="${name}"]:checked`);
   return el ? el.value : '';
-}
-
-function getChecked(groupId) {
-  return [...document.querySelectorAll(`#${groupId} input:checked`)].map(i => i.value);
 }
 
 function restoreRadioGroup(groupId) {
@@ -929,18 +1043,10 @@ function restoreRadioGroup(groupId) {
   if (!val) return;
   document.querySelectorAll(`#${groupId} .radio-btn`).forEach(rb => {
     rb.classList.remove('selected');
-    if (rb.querySelector('input').value === val) { rb.classList.add('selected'); rb.querySelector('input').checked = true; }
-  });
-}
-
-function restoreCheckMulti(groupId) {
-  if (currentPatientIndex < 0) return;
-  const p = patients[currentPatientIndex];
-  const vals = p.typeRepas || [];
-  document.querySelectorAll(`#${groupId} .check-btn`).forEach(cb => {
-    const v = cb.querySelector('input').value;
-    if (vals.includes(v)) { cb.classList.add('selected'); cb.querySelector('input').checked = true; }
-    else { cb.classList.remove('selected'); cb.querySelector('input').checked = false; }
+    if (rb.querySelector('input') && rb.querySelector('input').value === val) {
+      rb.classList.add('selected');
+      rb.querySelector('input').checked = true;
+    }
   });
 }
 
@@ -955,12 +1061,14 @@ function buildFoodTable(tableId, foodKeys, foodLabels, storeKey) {
     const label = foodLabels[i] || fk;
     const state = foodState[storeKey][fk] || { yn:'', qty:'' };
     const row = document.createElement('tr');
+    // escape single quotes in fk for onclick
+    const fkSafe = fk.replace(/'/g, "\\'");
     row.innerHTML = `
       <td class="food-name">${label}</td>
-      <td><button class="toggle-yes${state.yn==='oui'?' active':''}" onclick="toggleFood('${storeKey}','${fk}','oui',this)">${T[currentLang].oui}</button></td>
-      <td><button class="toggle-no${state.yn==='non'?' active':''}" onclick="toggleFood('${storeKey}','${fk}','non',this)">${T[currentLang].non}</button></td>
-      <td><button class="toggle-parfois${state.yn==='parfois'?' active':''}" onclick="toggleFood('${storeKey}','${fk}','parfois',this)">${T[currentLang].parfois}</button></td>
-      <td><input class="qty-input" type="text" placeholder="${currentLang==='ar'?'الكمية':'quantité'}" value="${state.qty||''}" oninput="setQty('${storeKey}','${fk}',this.value)"></td>
+      <td><button class="toggle-yes${state.yn==='oui'?' active':''}" onclick="toggleFood('${storeKey}','${fkSafe}','oui',this)">${T[currentLang].oui}</button></td>
+      <td><button class="toggle-no${state.yn==='non'?' active':''}" onclick="toggleFood('${storeKey}','${fkSafe}','non',this)">${T[currentLang].non}</button></td>
+      <td><button class="toggle-parfois${state.yn==='parfois'?' active':''}" onclick="toggleFood('${storeKey}','${fkSafe}','parfois',this)">${T[currentLang].parfois}</button></td>
+      <td><input class="qty-input" type="text" placeholder="${currentLang==='ar'?'الكمية':'quantité'}" value="${state.qty||''}" oninput="setQty('${storeKey}','${fkSafe}',this.value)"></td>
     `;
     tbody.appendChild(row);
   });
@@ -988,52 +1096,49 @@ function buildSummary() {
   ['rg-sexe','rg-activite','rg-objectif','rg-apres','rg-grignotage','rg-sommeil','rg-stress',
    'rg-hasPetitDej','rg-hasLunch','rg-hasDinner','rg-eau'].forEach(restoreRadioGroup);
 
-  const nom         = document.getElementById('f-nom').value;
-  const age         = document.getElementById('f-age').value;
-  const poids       = document.getElementById('f-poids').value;
-  const taille      = document.getElementById('f-taille').value;
-  const imc         = document.getElementById('f-imc').value;
-  const notes       = document.getElementById('f-notes').value;
-  const timeBkf     = document.getElementById('time-breakfast').value;
-  const timeLunch   = document.getElementById('time-lunch').value;
-  const timeDinner  = document.getElementById('time-dinner').value;
-  const sexe        = getRadio('sexe');
-  const activite    = getRadio('activite');
-  const objectif    = getRadio('objectif');
-  const apresRepas  = getRadio('apres');
-  const grignotage  = getRadio('grignotage');
-  const sommeil     = getRadio('sommeil');
-  const stress      = getRadio('stress');
-  const eau         = getRadio('eau');
-  const typeRepas   = getChecked('cg-repas');
-  const hasBkf      = getRadio('hasPetitDej');
-  const hasLunch    = getRadio('hasLunch');
-  const hasDinner   = getRadio('hasDinner');
+  const nom        = document.getElementById('f-nom').value;
+  const age        = document.getElementById('f-age').value;
+  const poids      = document.getElementById('f-poids').value;
+  const taille     = document.getElementById('f-taille').value;
+  const imc        = document.getElementById('f-imc').value;
+  const notes      = document.getElementById('f-notes').value;
+  const timeBkf    = document.getElementById('time-breakfast').value;
+  const timeLunch  = document.getElementById('time-lunch').value;
+  const timeDinner = document.getElementById('time-dinner').value;
+  const sexe       = getRadio('sexe');
+  const activite   = getRadio('activite');
+  const objectif   = getRadio('objectif');
+  const apresRepas = getRadio('apres');
+  const grignotage = getRadio('grignotage');
+  const sommeil    = getRadio('sommeil');
+  const stress     = getRadio('stress');
+  const eau        = getRadio('eau');
+  const typeRepas  = getRepasSelected();
+  const hasBkf     = getRadio('hasPetitDej');
+  const hasLunch   = getRadio('hasLunch');
+  const hasDinner  = getRadio('hasDinner');
+  const isAr       = currentLang === 'ar';
 
-  const isAr = currentLang === 'ar';
-
-  function mealTimeRow(label, time, has) {
-    const hasText = has === 'non' ? (isAr ? '🚫 لا' : '🚫 Non') : has === 'oui' ? (isAr ? '✅ نعم' : '✅ Oui') : '—';
-    const timeText = time || '—';
-    return `<div class="summary-box"><h4>${label}</h4><p>${hasText}${time ? ' · ' + timeText : ''}</p></div>`;
+  function mealBox(label, time, has) {
+    const hasText = has === 'non' ? (isAr?'🚫 لا':'🚫 Non') : (isAr?'✅ نعم':'✅ Oui');
+    return `<div class="summary-box"><h4>${label}</h4><p>${hasText}${time?' · '+time:''}</p></div>`;
   }
 
   function foodRows(storeKey, foodKeys, foodLabels) {
-    return foodKeys.map((fk, i) => {
+    return foodKeys.map((fk,i) => {
       const s = foodState[storeKey][fk] || {};
       if (!s.yn) return '';
-      const label = foodLabels[i] || fk;
       const icon = s.yn==='oui'?'✔':s.yn==='parfois'?'〜':'✖';
-      return `<tr><td>${label}</td><td>${icon}</td><td>${s.qty||'—'}</td></tr>`;
+      return `<tr><td>${foodLabels[i]||fk}</td><td>${icon}</td><td>${s.qty||'—'}</td></tr>`;
     }).filter(Boolean).join('');
   }
 
-  const bkfRows   = foodRows('breakfast', getFoodsKey('breakfast'), getFoods('breakfast'));
-  const lunchRows = foodRows('lunch',     getFoodsKey('lunch'),     getFoods('lunch'));
-  const dinnerRows= foodRows('dinner',    getFoodsKey('dinner'),    getFoods('dinner'));
-  const snackRows = foodRows('snack',     getFoodsKey('snack'),     getFoods('snack'));
+  const bkfRows    = foodRows('breakfast', getFoodsKey('breakfast'), getFoods('breakfast'));
+  const lunchRows  = foodRows('lunch',     getFoodsKey('lunch'),     getFoods('lunch'));
+  const dinnerRows = foodRows('dinner',    getFoodsKey('dinner'),    getFoods('dinner'));
+  const snackRows  = foodRows('snack',     getFoodsKey('snack'),     getFoods('snack'));
 
-  const labels = isAr ? {
+  const L = isAr ? {
     nom:'الاسم', ageSexe:'العمر / الجنس', poidsTaille:'الوزن / الطول', imc:'مؤشر كتلة الجسم',
     activite:'النشاط البدني', objectif:'الهدف', apres:'بعد الوجبات', grignotage:'التقطير',
     sommeil:'النوم', stress:'التوتر', eau:'الماء/يوم', typeRepas:'نوع الوجبات',
@@ -1049,47 +1154,37 @@ function buildSummary() {
 
   const ansTxt = isAr ? ' سنة' : ' ans';
 
+  function foodSection(rows, title) {
+    if (!rows) return '';
+    return `<div class="section-title" style="margin-top:22px">${title}</div>
+    <div class="summary-table-wrap"><table>
+      <thead><tr><th>${L.aliment}</th><th>${L.consomme}</th><th>${L.quantite}</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+  }
+
   document.getElementById('summary-body').innerHTML = `
     <div class="summary-grid">
-      <div class="summary-box"><h4>${labels.nom}</h4><p>${nom||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.ageSexe}</h4><p>${age?age+ansTxt:'—'} · ${sexe||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.poidsTaille}</h4><p>${poids?poids+' kg':'—'} / ${taille?taille+' cm':'—'}</p></div>
-      <div class="summary-box"><h4>${labels.imc}</h4><p>${imc||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.activite}</h4><p>${activite||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.objectif}</h4><p>${objectif||'—'}</p></div>
-      ${mealTimeRow(labels.bkf, timeBkf, hasBkf)}
-      ${mealTimeRow(labels.lunch, timeLunch, hasLunch)}
-      ${mealTimeRow(labels.dinner, timeDinner, hasDinner)}
-      <div class="summary-box"><h4>${labels.apres}</h4><p>${apresRepas||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.grignotage}</h4><p>${grignotage||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.sommeil}</h4><p>${sommeil||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.stress}</h4><p>${stress||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.eau}</h4><p>${eau||'—'}</p></div>
-      <div class="summary-box"><h4>${labels.typeRepas}</h4><p>${typeRepas.length?typeRepas.join(', '):'—'}</p></div>
+      <div class="summary-box"><h4>${L.nom}</h4><p>${nom||'—'}</p></div>
+      <div class="summary-box"><h4>${L.ageSexe}</h4><p>${age?age+ansTxt:'—'} · ${sexe||'—'}</p></div>
+      <div class="summary-box"><h4>${L.poidsTaille}</h4><p>${poids?poids+' kg':'—'} / ${taille?taille+' cm':'—'}</p></div>
+      <div class="summary-box"><h4>${L.imc}</h4><p>${imc||'—'}</p></div>
+      <div class="summary-box"><h4>${L.activite}</h4><p>${activite||'—'}</p></div>
+      <div class="summary-box"><h4>${L.objectif}</h4><p>${objectif||'—'}</p></div>
+      ${mealBox(L.bkf,   timeBkf,    hasBkf)}
+      ${mealBox(L.lunch,  timeLunch,  hasLunch)}
+      ${mealBox(L.dinner, timeDinner, hasDinner)}
+      <div class="summary-box"><h4>${L.apres}</h4><p>${apresRepas||'—'}</p></div>
+      <div class="summary-box"><h4>${L.grignotage}</h4><p>${grignotage||'—'}</p></div>
+      <div class="summary-box"><h4>${L.sommeil}</h4><p>${sommeil||'—'}</p></div>
+      <div class="summary-box"><h4>${L.stress}</h4><p>${stress||'—'}</p></div>
+      <div class="summary-box"><h4>${L.eau}</h4><p>${eau||'—'}</p></div>
+      <div class="summary-box"><h4>${L.typeRepas}</h4><p>${typeRepas.length?typeRepas.join(', '):'—'}</p></div>
     </div>
-
-    ${bkfRows?`<div class="section-title" style="margin-top:24px">${labels.bkf}</div>
-    <div class="summary-table-wrap"><table>
-      <thead><tr><th>${labels.aliment}</th><th>${labels.consomme}</th><th>${labels.quantite}</th></tr></thead>
-      <tbody>${bkfRows}</tbody></table></div>`:''}
-
-    ${lunchRows?`<div class="section-title">${labels.lunch}</div>
-    <div class="summary-table-wrap"><table>
-      <thead><tr><th>${labels.aliment}</th><th>${labels.consomme}</th><th>${labels.quantite}</th></tr></thead>
-      <tbody>${lunchRows}</tbody></table></div>`:''}
-
-    ${dinnerRows?`<div class="section-title">${labels.dinner}</div>
-    <div class="summary-table-wrap"><table>
-      <thead><tr><th>${labels.aliment}</th><th>${labels.consomme}</th><th>${labels.quantite}</th></tr></thead>
-      <tbody>${dinnerRows}</tbody></table></div>`:''}
-
-    ${snackRows?`<div class="section-title">${labels.snack}</div>
-    <div class="summary-table-wrap"><table>
-      <thead><tr><th>${labels.aliment}</th><th>${labels.consomme}</th><th>${labels.quantite}</th></tr></thead>
-      <tbody>${snackRows}</tbody></table></div>`:''}
-
-    ${notes?`<div class="section-title">${labels.notes}</div><p style="color:var(--text-light);line-height:1.6">${notes}</p>`:''}
-
+    ${foodSection(bkfRows,    L.bkf)}
+    ${foodSection(lunchRows,  L.lunch)}
+    ${foodSection(dinnerRows, L.dinner)}
+    ${foodSection(snackRows,  L.snack)}
+    ${notes?`<div class="section-title">${L.notes}</div><p style="color:var(--text-light);line-height:1.7">${notes}</p>`:''}
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="goTo(5)">${T[currentLang].editBtn}</button>
       <button class="btn btn-primary" onclick="savePatient()">${T[currentLang].saveBtn}</button>
@@ -1101,18 +1196,22 @@ function buildSummary() {
 //  SAVE
 // ══════════════════════════════════════════════════════
 function savePatient() {
-  const nom = document.getElementById('f-nom').value.trim();
-  if (!nom) { showToast(T[currentLang].nameRequired); return; }
-
   const record = {
-    nom, age: document.getElementById('f-age').value,
-    sexe: getRadio('sexe'), poids: document.getElementById('f-poids').value,
-    taille: document.getElementById('f-taille').value, imc: document.getElementById('f-imc').value,
-    activite: getRadio('activite'), objectif: getRadio('objectif'),
-    apresRepas: getRadio('apres'), grignotage: getRadio('grignotage'),
-    sommeil: getRadio('sommeil'), stress: getRadio('stress'),
-    eau: getRadio('eau'), typeRepas: getChecked('cg-repas'),
-    notes: document.getElementById('f-notes').value,
+    nom:      document.getElementById('f-nom').value.trim(),
+    age:      document.getElementById('f-age').value,
+    sexe:     getRadio('sexe'),
+    poids:    document.getElementById('f-poids').value,
+    taille:   document.getElementById('f-taille').value,
+    imc:      document.getElementById('f-imc').value,
+    activite: getRadio('activite'),
+    objectif: getRadio('objectif'),
+    apresRepas:  getRadio('apres'),
+    grignotage:  getRadio('grignotage'),
+    sommeil:     getRadio('sommeil'),
+    stress:      getRadio('stress'),
+    eau:         getRadio('eau'),
+    typeRepas:   getRepasSelected(),
+    notes:       document.getElementById('f-notes').value,
     breakfastTime: document.getElementById('time-breakfast').value,
     lunchTime:     document.getElementById('time-lunch').value,
     dinnerTime:    document.getElementById('time-dinner').value,
@@ -1123,7 +1222,7 @@ function savePatient() {
     lunch:     JSON.parse(JSON.stringify(foodState.lunch)),
     dinner:    JSON.parse(JSON.stringify(foodState.dinner)),
     snack:     JSON.parse(JSON.stringify(foodState.snack)),
-    savedAt: new Date().toLocaleString('fr-FR')
+    savedAt:   new Date().toLocaleString('fr-FR')
   };
 
   if (currentPatientIndex >= 0) {
@@ -1134,11 +1233,12 @@ function savePatient() {
     showToast(T[currentLang].saved);
   }
   savePatients();
-  setTimeout(goList, 1300);
+  setTimeout(goList, 1400);
 }
 
-// ── Init ──
+// ── Init ──────────────────────────────────────────────
 goList();
 </script>
+
 </body>
 </html>
